@@ -1,6 +1,6 @@
 # LOCKER
 
-**Thanks to [Tony Rogvall](https://github.com/tonyrog) for seeding the thought.**
+**Thanks to [Tony Rogvall](https://github.com/tonyrog) for coming up with the original idea in an Erlang context.**
 
 Pack up a file system with any binary and run it anywhere with no
 local dependencies.
