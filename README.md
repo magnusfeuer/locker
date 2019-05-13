@@ -2,7 +2,8 @@
 
 **Thanks to Tony Rogvall github.com/tonyrog for seeding the thought.**
 
-Pack up a file system with any binary, allowing it to be self-contained.
+Pack up a file system with any binary and run it anywhere with no
+local dependencies.
 
 Locker provides tooling to containerize any binary so that it executes
 inside a file system that is embedded into the binary itself.
