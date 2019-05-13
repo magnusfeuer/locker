@@ -82,8 +82,6 @@ long loopdev_setup_device(int fd, off_t offset, size_t size, char* device_result
         return -1;
     }
 
-//    close(loopdev_fd);
-
     strcpy(device_result, loopdev);
     printf("Loopback device: %s\n", device_result);
     return 0;
@@ -197,6 +195,12 @@ int main(int argc, char *const argv[], char *const* envp)
     for(int i = 1; i <= argc; ++i)
         nargv[i] = argv[i];
 
+    // Do a delayed umount on the squashfs system,
+    // effectively hiding it from the rest of the system.
+    if (umount2(".", MNT_DETACH) == -1) {
+        perror("umount");
+        exit(255);
+    }
     execve(nargv[0], nargv, envp);
     perror("fexecve");
     exit(255);
