@@ -44,7 +44,7 @@ long loopdev_get_free(void)
     return devnr;
 }
 
-long loopdev_setup_device(int fd, off_t offset, char* device_result)
+long loopdev_setup_device(int fd, off_t offset, size_t size, char* device_result)
 {
 
     int loopdev_fd = -1;
@@ -69,9 +69,9 @@ long loopdev_setup_device(int fd, off_t offset, char* device_result)
 
     memset(&info, 0, sizeof(struct loop_info64)); /* Is this necessary? */
     info.lo_offset = offset;
-    info.lo_flags = LO_FLAGS_AUTOCLEAR; // Free loopback on lat close
-    /* info.lo_sizelimit = 0 => max avilable */
-    /* info.lo_encrypt_type = 0 => none */
+    info.lo_flags = LO_FLAGS_AUTOCLEAR | LO_FLAGS_READ_ONLY; // Free loopback on lat close
+    info.lo_sizelimit = size;
+    info.lo_encrypt_type = 0;
 
     if (ioctl(loopdev_fd, LOOP_SET_STATUS64, &info)) {
         fprintf(stderr, "Failed to set info: %s\n", strerror(errno));
@@ -80,8 +80,10 @@ long loopdev_setup_device(int fd, off_t offset, char* device_result)
         return -1;
     }
 
-    strcpy(device_result, loopdev);
+//    close(loopdev_fd);
 
+    strcpy(device_result, loopdev);
+    printf("Loopback device: %s\n", device_result);
     return 0;
 }
 
@@ -140,31 +142,51 @@ int main(int argc, char *const argv[])
 
     sprintf(mount_point, "%lX", time(0));
 
-    loopdev_setup_device(self_fd, end_of_binary, loop_device);
-    //sprintf(options, "loop=%s,offset=%lu,sizelimit=%lu", end_of_binary,loop_device, data_sz);
-    sprintf(options, "ro,sizelimit=%lu",  data_sz);
+    // Setup the loopback device
+    loopdev_setup_device(self_fd, end_of_binary, data_sz, loop_device);
+    // sprintf(options, "loop=%s,offset=%lu,sizelimit=%lu", loop_device, end_of_binary, data_sz);
+    strcpy(options, "");
 
     printf("Mounting %s:%lu on %s. Options: %s\n", argv[0], end_of_binary, mount_point, options);
+    errno = 0;
     if (mkdir(mount_point, 0755) == -1) {
         perror(mount_point);
         exit(255);
     }
 
 
-    if( mount (loop_device, mount_point, "ext2", 0, options) == -1) {
-        perror("mount");
+    // Can't get the call below to work. Permission denied every time.
+//    if( mount (loop_device, mount_point, "ext2", 0, options) == -1) {
+//        perror("mount");
+//        exit(255);
+//    }
+
+    char xx[1024];
+    sprintf(xx, "/bin/mount -oro %s %s", loop_device, mount_point);
+    if (system(xx)) {
+        fprintf(stderr, "Could not execute %s\n", xx);
         exit(255);
     }
 
-    // Chroot into mount point.
-    chroot(mount_point);
-
     // Jump to start of native-binary
+    printf("Jumping to end of locker at %lu\n", end_of_locker);
     lseek(self_fd, end_of_locker, SEEK_SET);
 
     // Exec from file descriptor.
     extern char **environ;
-    fexecve(self_fd, argv, environ);
+    puts("Exec time");
+
+    // Create a loopback device into self that points to the beginning
+    // of the native binary
+
+    loopdev_setup_device(self_fd, end_of_locker, end_of_binary - end_of_locker, loop_device);
+    if (chmod(loop_device, 0755) == -1) {
+        perror("chmod");
+        exit(255);
+    }
+
+    execv(loop_device, argv);
+
     perror("fexecve");
     exit(255);
 }
