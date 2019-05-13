@@ -13,7 +13,7 @@ CFLAGS=-ggdb
 all: ${TARGET} ${DEMO_CODE}
 
 ${TARGET}: ${OBJ}
-	${CC} ${CFLAGS} $^ -o ${TARGET}
+	${CC} --static ${CFLAGS} $^ -o ${TARGET}
 
 ${DEMO_CODE}: ${DEMO_CODE}.o
 	${CC} --static ${CFLAGS} $^ -o ${DEMO_CODE}
@@ -22,6 +22,8 @@ ${DEMO_CODE}: ${DEMO_CODE}.o
 	@echo "  mkdir fs"
 	@echo "  cp README.md fs"
 	@echo "  ./mklocker.sh demo_code demo_code.lckr fs"
+	@echo "  mv ./demo_code.lckr /tmp"
+	@echo "  cd /tmp"
 	@echo "  sudo ./demo_code.lckr"
 	@echo
 
