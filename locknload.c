@@ -143,7 +143,9 @@ int main(int argc, char *const argv[], char *const* envp)
     // the end of the file.
     data_sz = offset - end_of_locker;
 
-    sprintf(mount_point, "%lX", time(0));
+    srand(time(0));
+    sprintf(mount_point, "/tmp/locker_%x", rand());
+
     // Setup the loopback device
     loopdev_setup_device(self_fd, end_of_locker, data_sz, loop_device);
     //strcpy(options, "");

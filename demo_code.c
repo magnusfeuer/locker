@@ -6,10 +6,16 @@
 //
 
 
-// Pre-loader for self contained binary+file system.
-
 #include <stdio.h>
 int main(int argc, char *const argv[], char *const* envp)
 {
-    puts("Hello world");
+    FILE *in = fopen("README.md", "r");
+    size_t read_res = 0;
+    char buf[512];
+
+    puts("Opening README.md from locker filesystem and dumping it on stdout!\n----");
+    while((read_res = fread(buf, 1, sizeof(buf), in)) > 0)
+        fwrite(buf, 1, read_res, stdout);
+
+    puts("----\nDone");
 }

@@ -39,6 +39,8 @@ mksquashfs ${NATIVE_INPUT_BIN} ${SQUASHFS_IMG}
 # Add the extra data (loopback fs) at the end of the locker binary
 cat ${SQUASHFS_IMG} >> ${LOCKER_OUTPUT_BIN}
 
+rm ${SQUASHFS_IMG}
+
 # Create the filename that the native bin has inside the squashfs fs.
 NATIVE_INPUT_BIN_IMGNAME=/$(basename ${NATIVE_INPUT_BIN})
 
