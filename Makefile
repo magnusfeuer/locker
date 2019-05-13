@@ -2,8 +2,8 @@
 # Makefile for VSM++
 #
 
-TARGET=locker
-OBJ=locker.o
+TARGET=locknload
+OBJ=locknload.o
 HDR=
 CFLAGS=-ggdb
 .PHONY = clean all
