@@ -18,10 +18,12 @@ ${TARGET}: ${OBJ}
 ${DEMO_CODE}: ${DEMO_CODE}.o
 	${CC} --static ${CFLAGS} $^ -o ${DEMO_CODE}
 	@echo "Demo code built. Now create a locker binary from it."
+	@echo
 	@echo "  mkdir fs"
-	@echo "  cp demo_code README.md fs"
-	@echo "  ./mklocker.sh ./fs/demo_code demo_code.lckr fs"
+	@echo "  cp README.md fs"
+	@echo "  ./mklocker.sh demo_code demo_code.lckr fs"
 	@echo "  sudo ./demo_code.lckr"
+	@echo
 
 ${OBJ}: ${HDR}
 

@@ -55,7 +55,6 @@ long loopdev_setup_device(int fd, off_t offset, size_t size, char* device_result
     char loopdev[128];
 
     sprintf(loopdev, "/dev/loop%ld", loopdev_get_free());
-    printf("loopdev = %s\n", loopdev);
 
     loopdev_fd = open(loopdev, O_RDWR);
     if (loopdev_fd == -1) {
@@ -83,7 +82,6 @@ long loopdev_setup_device(int fd, off_t offset, size_t size, char* device_result
     }
 
     strcpy(device_result, loopdev);
-    printf("Loopback device: %s\n", device_result);
     return 0;
 }
 
@@ -152,8 +150,6 @@ int main(int argc, char *const argv[], char *const* envp)
     // sprintf(options, "loop=%s,offset=%lu,sizelimit=%lu", loop_device, end_of_locker, data_sz);
     //sprintf(options, "loop=%s", loop_device);
 
-    printf("Mounting %s:%lu on %s. Options: %s\n", argv[0], end_of_locker, mount_point, options);
-
     if (mkdir(mount_point, 0755) == -1) {
         perror(mount_point);
         exit(255);
@@ -176,7 +172,7 @@ int main(int argc, char *const argv[], char *const* envp)
 
     wait(&mount_res);
     if (mount_res != 0) {
-        printf("Could not mount %s on %s\n", loop_device, mount_point);
+        fprintf(stderr, "Could not mount %s on %s\n", loop_device, mount_point);
         exit(255);
     }
 

@@ -31,10 +31,10 @@ LOCKER_LOADER_SIZE=$(ls -l ${LOCKER_LOADER_BIN} | cut -d' ' -f 5)
 cp ${LOCKER_LOADER_BIN} ${LOCKER_OUTPUT_BIN}
 
 rm -f ${SQUASHFS_IMG}
-(cd ${DIRECTORY}; mksquashfs . ${SQUASHFS_IMG})
+(cd ${DIRECTORY}; mksquashfs . ${SQUASHFS_IMG} ) > /dev/null
 
 # Add native binary
-mksquashfs ${NATIVE_INPUT_BIN} ${SQUASHFS_IMG}
+mksquashfs ${NATIVE_INPUT_BIN} ${SQUASHFS_IMG} > /dev/null
 
 # Add the extra data (loopback fs) at the end of the locker binary
 cat ${SQUASHFS_IMG} >> ${LOCKER_OUTPUT_BIN}
